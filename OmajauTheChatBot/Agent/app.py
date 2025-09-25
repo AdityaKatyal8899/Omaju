@@ -248,7 +248,9 @@ def health():
         "genai": gemini_status,
         "timestamp": datetime.utcnow().isoformat()
     })
-
+@app.route("/api/health", methods=["GET"])
+def api_health():
+    return health()
 # ============ New REST endpoints for 3-collection schema ============
 
 def _require_uid_match(uid_from_path, user_obj):
