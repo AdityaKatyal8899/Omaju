@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`font-body ${workSans.variable} ${poppins.variable} ${openSans.variable}`}
         suppressHydrationWarning={true}
       >
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"><span className="loader" /></div>}>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

@@ -20,7 +20,12 @@ app = Flask(__name__)
 # Allow Authorization header through CORS so frontend can send Bearer tokens
 CORS(
     app,
-    origins=["http://localhost:3000"],
+    origins=[
+        "https://omaju-chatinterface-adityakatyal.vercel.app",
+        "https://omaju-onboarding.vercel.app",
+        "http://localhost:3000",  # optional for local testing
+        "http://localhost:3001"   # optional for local testing
+    ],
     supports_credentials=True,
     allow_headers=["Content-Type", "Authorization"],
     expose_headers=["Content-Type"],
