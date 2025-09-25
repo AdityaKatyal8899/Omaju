@@ -52,10 +52,10 @@ app.use(globalLimiter);
  */
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow non-browser requests
+    if (!origin) return callback(null, true);
     const allowedOrigins = [
-      'http://localhost:3000', // OmajuChat frontend
-      'http://localhost:3001', // OmajuSignUp frontend
+      'http://localhost:3000',
+      'http://localhost:3001',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3001',
       'https://omaju-signup.vercel.app',
@@ -218,7 +218,7 @@ process.on('SIGINT', () => {
  * ========================
  */
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API Base URL: ${process.env.BASE_URL || 'http://localhost:' + PORT}`);
