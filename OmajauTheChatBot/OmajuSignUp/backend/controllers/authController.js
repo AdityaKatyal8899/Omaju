@@ -237,33 +237,47 @@ const googleOAuthSuccess = async (req, res) => {
 
 // GitHub OAuth Success Handler
 const githubOAuthSuccess = async (req, res) => {
-  try {
-    const { user } = req;
+try {
+  const { user } = req;
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'GitHub authentication failed'
-      });
-    }
-
-    // Generate tokens
-    const { accessToken, refreshToken } = generateTokens(user.email);
-
-    // Update last login
-    user.lastLogin = new Date();
-    await user.save();
-
-    // Redirect to Agent callback with tokens and preserve optional `next` from OAuth state
-    const base = 'http://localhost:3000/auth/callback';
-    const nextParam = req.query.state ? `&next=${encodeURIComponent(req.query.state)}` : '';
-    res.redirect(`${base}?token=${accessToken}&refreshToken=${refreshToken}&provider=github${nextParam}`);
-  } catch (error) {
-    console.error('GitHub OAuth success error:', error);
-    const agentFrontendUrl = process.env.AGENT_FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(`${agentFrontendUrl}/auth/error?message=Authentication failed`);
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "GitHub authentication failed",
+    });
   }
-};
+
+  // Generate tokens
+  const { accessToken, refreshToken } = generateTokens(user.email);
+
+  // Update last login
+  user.lastLogin = new Date();
+  await user.save();
+
+  // Use deployed frontend instead of localhost
+  const base =
+    process.env.AGENT_FRONTEND_URL ||
+    "https://omaju-chatinterface-adityakatyal.vercel.app/auth/callback";
+
+  const nextParam = req.query.state
+    ? `&next=${encodeURIComponent(req.query.state)}`
+    : "";
+
+  res.redirect(
+    `${base}?token=${accessToken}&refreshToken=${refreshToken}&provider=github${nextParam}`
+  );
+} catch (error) {
+  console.error("GitHub OAuth success error:", error);
+
+  const agentFrontendUrl =
+    process.env.AGENT_FRONTEND_URL ||
+    "https://omaju-chatinterface-adityakatyal.vercel.app";
+
+  res.redirect(
+    `${agentFrontendUrl}/auth/error?message=Authentication failed`
+  );
+}
+
 
 // OAuth Failure Handler
 const oauthFailure = (req, res) => {
