@@ -404,6 +404,6 @@ def delete_convo(session_id):
         return jsonify({"success": False, "message": "Session not found"}), 404
     return jsonify({"success": True})
 
-
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    PORT = int(os.environ.get("PORT", 5000))  # Use Render’s port, fallback to 5000 locally
+    app.run(host="0.0.0.0", port=PORT, debug=True)
