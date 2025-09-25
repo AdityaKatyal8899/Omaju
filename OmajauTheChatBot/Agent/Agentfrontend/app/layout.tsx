@@ -1,0 +1,49 @@
+import type React from "react";
+import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Suspense } from "react";
+import { Toaster as SonnerToaster } from "@/components/ui/sonner";
+import { Toaster as ShadToaster } from "@/components/ui/toaster";
+import { Work_Sans, Poppins, Open_Sans } from "next/font/google";
+
+// Brand fonts
+const workSans = Work_Sans({ subsets: ["latin"], variable: "--font-work-sans" });
+const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-poppins" });
+const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-open-sans" });
+
+export const metadata: Metadata = {
+  title: "Omaju the Bot",
+  description: "Created with v0",
+  generator: "v0.app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`font-body ${workSans.variable} ${poppins.variable} ${openSans.variable}`}
+        suppressHydrationWarning={true}
+      >
+        <Suspense fallback={<div>Loading...</div>}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </Suspense>
+        <Analytics />
+        <SonnerToaster richColors position="top-right" />
+        <ShadToaster />
+      </body>
+    </html>
+  );
+}
