@@ -66,7 +66,11 @@ class JSONEncoder(json.JSONEncoder):
 
 app.json_encoder = JSONEncoder
 
-AUTH_API_BASE = os.getenv("AUTH_API_BASE", "http://localhost:5001/api/auth")
+# Use the environment variable if set, otherwise default based on environment
+if os.getenv("RENDER") == "true":  # Render sets RENDER=true in deployed env
+    AUTH_API_BASE = os.getenv("AUTH_API_BASE")  # should be set in Render
+else:
+    AUTH_API_BASE = "http://localhost:5001/api/auth"
 
 def _validate_auth_or_401():
     """Validate Authorization Bearer token against OmajuSignUp profile endpoint.
