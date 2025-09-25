@@ -8,3 +8,4 @@ gTTS==2.3.2
 SpeechRecognition==3.10.0
 pyttsx3==2.90
 langchain-google-genai==2.1.12
+langchain==0.3.27
