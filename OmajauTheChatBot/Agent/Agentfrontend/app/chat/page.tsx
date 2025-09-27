@@ -34,6 +34,8 @@ export default function ChatPage() {
       try {
         const accessToken = localStorage.getItem('accessToken')
         const refreshToken = localStorage.getItem('refreshToken')
+        console.debug('[auth] tokens present?', { hasAccess: !!accessToken, hasRefresh: !!refreshToken })
+        console.debug('[auth] AUTH_API_BASE:', AUTH_API_BASE, 'SIGNUP_FRONTEND_URL:', SIGNUP_FRONTEND_URL)
         if (!accessToken || !refreshToken) {
           // No tokens → redirect to sign-up
           const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
@@ -43,7 +45,9 @@ export default function ChatPage() {
         }
 
         // Validate token with profile endpoint
-        const res = await fetch(`${AUTH_API_BASE}/profile`, {
+        const profileUrl = `${AUTH_API_BASE}/profile`
+        console.debug('[auth] calling profile:', profileUrl)
+        const res = await fetch(profileUrl, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -52,6 +56,9 @@ export default function ChatPage() {
         })
 
         if (!res.ok) {
+          let body: any = null
+          try { body = await res.text() } catch {}
+          console.warn('[auth] profile failed', { status: res.status, body })
           // Token invalid or expired → redirect to sign-up
           const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
           setRedirecting(true)
@@ -67,6 +74,7 @@ export default function ChatPage() {
         setAuthChecked(true)
       } catch (e) {
         // Network or other error → fail closed to sign-up
+        console.error('[auth] verifyAuth error', e)
         const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
         setRedirecting(true)
         window.location.href = `${SIGNUP_FRONTEND_URL}/sign-up?next=${encodeURIComponent(nextUrl)}`
