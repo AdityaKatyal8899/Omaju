@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { getConversationHistory, sendChatMessage } from "@/lib/api"
+import { ApiError } from "@/lib/api"
 import { MessageBubble, type Message } from "./message-bubble"
 import { InputBox } from "./input-box"
 import { EmptyState } from "./empty-state"
@@ -88,18 +89,20 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
         style: { background: "#00f5d4", color: "#002", boxShadow: "0 8px 24px rgba(0,0,0,0.25)" },
       })
     } catch (e) {
+      const status = e instanceof ApiError ? e.status : undefined
+      const description = status ? `Server returned ${status}.` : "Could not reach server."
       setMessages(prev => {
         const updated = [...prev]
         updated[updated.length - 1] = {
           role: "assistant",
-          content: "Oops! Something went wrong.",
+          content: status ? `Oops! Something went wrong (HTTP ${status}).` : "Oops! Something went wrong.",
           timestamp: new Date().toISOString(),
         }
         return updated
       })
       toast({
         title: "Message failed",
-        description: "Could not reach server.",
+        description,
         duration: 2500,
         style: { background: "#ff4d6d", color: "#fff" },
       })

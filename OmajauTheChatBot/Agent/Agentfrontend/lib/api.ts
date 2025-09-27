@@ -1,4 +1,9 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_CHAT_API_URL as string
+// Fail fast in runtime if API base URL is not configured
+if (!API_BASE_URL || API_BASE_URL === 'undefined') {
+  // eslint-disable-next-line no-console
+  console.error('[config] NEXT_PUBLIC_CHAT_API_URL is not set. API calls will fail.')
+}
 const SIGNUP_FRONTEND_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'http://localhost:3001'
 
 export interface ChatMessage {

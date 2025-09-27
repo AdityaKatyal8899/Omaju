@@ -30,6 +30,21 @@ export default function ChatPage() {
   
   // On mount: verify authentication via OmajuSignUp backend and capture uid
   useEffect(() => {
+    // 1) Capture tokens from URL if signup app redirected with them
+    try {
+      const url = new URL(window.location.href)
+      const at = url.searchParams.get('accessToken')
+      const rt = url.searchParams.get('refreshToken')
+      if (at) localStorage.setItem('accessToken', at)
+      if (rt) localStorage.setItem('refreshToken', rt)
+      if (at || rt) {
+        url.searchParams.delete('accessToken')
+        url.searchParams.delete('refreshToken')
+        // Clean URL without reloading
+        window.history.replaceState({}, document.title, url.toString())
+      }
+    } catch {}
+
     const verifyAuth = async () => {
       try {
         const accessToken = localStorage.getItem('accessToken')
@@ -68,7 +83,7 @@ export default function ChatPage() {
 
         // Auth OK → allow rendering and set uid
         const data = await res.json()
-        const id = data?.data?.user?.id
+        const id = data?.data?.user?._id || data?.data?.user?.id || data?.data?.user?.uid
         if (!id) throw new Error('No uid in profile')
         setUid(String(id))
         setAuthChecked(true)
