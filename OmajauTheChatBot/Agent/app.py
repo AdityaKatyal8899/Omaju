@@ -10,7 +10,7 @@ import requests
 import traceback
 import logging
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.schema import HumanMessage, SystemMessage, AIMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 # Load environment variables
 load_dotenv()
@@ -50,6 +50,7 @@ convos_col = db["convos"]        # sessions and messages per chat
 # Prefer GEMINI_API_KEY (Render-provided), fall back to GOOGLE_API_KEY for compatibility
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL") or "gemini-1.5-flash"
+DEBUG_GENAI = (os.getenv("DEBUG_GENAI", "false").lower() == "true")
 
 chat_model = None
 if GEMINI_API_KEY:
@@ -204,6 +205,9 @@ def chat():
             traceback.format_exc(),
         )
         agent_response = "Sorry, I am having trouble generating a response."
+        if DEBUG_GENAI:
+            # Include error detail in response for debugging (non-breaking: frontend ignores extra fields)
+            return jsonify({"response": agent_response, "error": str(e)}), 200
 
     # Save AI response into the same location as user message
     ai_doc = {"role": "assistant", "content": agent_response, "timestamp": datetime.utcnow()}
@@ -286,6 +290,24 @@ def health():
 def api_health():
     return health()
 # ============ New REST endpoints for 3-collection schema ============
+
+@app.route("/genai/health", methods=["GET"])
+def genai_health():
+    """Attempt a minimal invocation to verify Gemini connectivity and model access."""
+    info = {
+        "model": GEMINI_MODEL,
+        "has_key": bool(GEMINI_API_KEY),
+        "configured": bool(chat_model is not None),
+    }
+    if not chat_model:
+        return jsonify({"ok": False, **info, "error": "chat_model is not initialized (missing API key?)"}), 200
+    try:
+        probe = chat_model.invoke([HumanMessage(content="ping")])
+        preview = (probe.content or "")[:120]
+        return jsonify({"ok": True, **info, "preview": preview}), 200
+    except Exception as e:
+        logging.error("[genai] Health probe failed: %s\n%s", str(e), traceback.format_exc())
+        return jsonify({"ok": False, **info, "error": str(e)}), 200
 
 @app.route("/loader", methods=["GET"])
 def loader_page():

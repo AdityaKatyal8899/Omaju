@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { Toaster as ShadToaster } from "@/components/ui/toaster";
 import { Work_Sans, Poppins, Open_Sans } from "next/font/google";
+import { Spinner } from "@/components/spinner";
 
 // Brand fonts
 const workSans = Work_Sans({ subsets: ["latin"], variable: "--font-work-sans" });
@@ -30,7 +31,7 @@ export default function RootLayout({
         className={`font-body ${workSans.variable} ${poppins.variable} ${openSans.variable}`}
         suppressHydrationWarning={true}
       >
-        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"><span className="loader" /></div>}>
+        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"><Spinner /></div>}>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -40,7 +41,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </Suspense>
-        <Analytics />
+        {process.env.NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS === 'true' && <Analytics />}
         <SonnerToaster richColors position="top-right" />
         <ShadToaster />
       </body>

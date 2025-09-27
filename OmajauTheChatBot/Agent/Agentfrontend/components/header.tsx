@@ -212,7 +212,9 @@ export function Header({ showNav = true, showBack = false, backHref = "/", showN
                 <DropdownMenu>
                   <DropdownMenuTrigger className="focus:outline-none inline-flex items-center justify-center align-middle">
                     <Avatar className="self-center h-7 w-7 max-[360px]:h-6 max-[360px]:w-6 sm:h-8 sm:w-8 lg:h-9 lg:w-9 ring-2 ring-border/60 transition-shadow hover:shadow-[0_0_0_4px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_0_4px_rgba(255,255,255,0.15)]">
-                      <AvatarImage className="w-full h-full object-cover" src={avatarUrl || "/avatar.png"} alt={userName || userEmail || "User"} onError={() => setAvatarUrl("")} />
+                      {avatarUrl ? (
+                        <AvatarImage className="w-full h-full object-cover" src={avatarUrl} alt={userName || userEmail || "User"} onError={() => setAvatarUrl("")} />
+                      ) : null}
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
