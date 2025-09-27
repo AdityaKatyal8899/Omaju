@@ -66,11 +66,12 @@ class JSONEncoder(json.JSONEncoder):
 
 app.json_encoder = JSONEncoder
 
-# Use the environment variable if set, otherwise default based on environment
+# Use the environment variable if set, otherwise choose a safe default
+# On Render, prefer AUTH_API_BASE env; if missing, fall back to the deployed auth URL
 if os.getenv("RENDER") == "true":  # Render sets RENDER=true in deployed env
-    AUTH_API_BASE = os.getenv("AUTH_API_BASE")  # should be set in Render
+    AUTH_API_BASE = os.getenv("AUTH_API_BASE") or "https://omaju-onboarding.onrender.com/api/auth"
 else:
-    AUTH_API_BASE = "http://localhost:5001/api/auth"
+    AUTH_API_BASE = os.getenv("AUTH_API_BASE") or "http://localhost:5001/api/auth"
 
 def _validate_auth_or_401():
     """Validate Authorization Bearer token against OmajuSignUp profile endpoint.
@@ -81,15 +82,23 @@ def _validate_auth_or_401():
         return None, (jsonify({"success": False, "message": "Access token required"}), 401)
     token = auth_header.split(" ", 1)[1]
     try:
-        resp = requests.get(f"{AUTH_API_BASE}/profile", headers={
+        profile_url = f"{AUTH_API_BASE}/profile"
+        print("[auth] validating token via:", profile_url)
+        resp = requests.get(profile_url, headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         }, timeout=5)
         if resp.status_code != 200:
+            try:
+                body = resp.text
+            except Exception:
+                body = None
+            print("[auth] profile failed", resp.status_code, body)
             return None, (jsonify({"success": False, "message": "Invalid or expired token"}), 401)
         data = resp.json()
         return data.get("data", {}).get("user"), None
     except Exception as e:
+        print("[auth] error contacting auth service:", e)
         return None, (jsonify({"success": False, "message": "Auth service unavailable"}), 503)
 
 # Root endpoint
