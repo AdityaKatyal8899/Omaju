@@ -7,13 +7,14 @@ from bson import ObjectId
 import json
 from flask_cors import CORS
 import requests
-
-# ✅ Correct Gemini import
+import traceback
+import logging
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.schema import HumanMessage, SystemMessage
+from langchain.schema import HumanMessage, SystemMessage, AIMessage
 
 # Load environment variables
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -46,16 +47,25 @@ chats_col = db["chats"]          # chat titles per user (uid)
 convos_col = db["convos"]        # sessions and messages per chat
 
 # Gemini setup
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_MODEL = "gemini-1.5-flash"
+# Prefer GEMINI_API_KEY (Render-provided), fall back to GOOGLE_API_KEY for compatibility
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL") or "gemini-1.5-flash"
 
-chat_model = ChatGoogleGenerativeAI(
-    model=GEMINI_MODEL,
-    temperature=0.7,
-    google_api_key=GOOGLE_API_KEY
-)
+chat_model = None
+if GEMINI_API_KEY:
+    try:
+        chat_model = ChatGoogleGenerativeAI(
+            model=GEMINI_MODEL,
+            temperature=0.7,
+            google_api_key=GEMINI_API_KEY
+        )
+        logging.info("[genai] Initialized ChatGoogleGenerativeAI with model %s", GEMINI_MODEL)
+    except Exception:
+        logging.error("[genai] Failed to initialize ChatGoogleGenerativeAI: %s", traceback.format_exc())
+else:
+    logging.warning("[genai] No GEMINI_API_KEY/GOOGLE_API_KEY configured. Responses will fail.")
 
-# ✅ Custom JSON Encoder for ObjectId and datetime
+# Custom JSON Encoder for ObjectId and datetime
 class JSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, ObjectId):
@@ -167,8 +177,11 @@ def chat():
     for msg in recent_msgs:
         if msg["role"] == "user":
             history.append(HumanMessage(content=msg["content"]))
+        elif msg["role"] == "assistant":
+            history.append(AIMessage(content=msg["content"]))
         else:
-            history.append(SystemMessage(content=msg["content"]))
+            # Any non-user/assistant roles are treated as system messages
+            history.append(SystemMessage(content=msg.get("content", "")))
 
     # Add identity context
     identity = SystemMessage(content="Your name is Omaju, a fun, friendly and extroverted AI ChatBot, created by Aditya Katyal, provide them my protfolio link to visit me https://adityakatyal-portfolio.onrender.com " \
@@ -178,10 +191,18 @@ def chat():
 
     # Generate AI response
     try:
+        if not chat_model:
+            raise RuntimeError("Gemini chat_model not initialized (missing API key?)")
         agent_msg = chat_model.invoke(full_history)
         agent_response = agent_msg.content
     except Exception as e:
-        print("GenAI invocation error:", e)
+        logging.error(
+            "[genai] Invocation failed. Model=%s, HasKey=%s, Error=%s\n%s",
+            GEMINI_MODEL,
+            bool(GEMINI_API_KEY),
+            str(e),
+            traceback.format_exc(),
+        )
         agent_response = "Sorry, I am having trouble generating a response."
 
     # Save AI response into the same location as user message
@@ -253,7 +274,7 @@ def health():
     except Exception as e:
         mongo_status = f"disconnected ({str(e)})"
 
-    gemini_status = "configured" if GOOGLE_API_KEY else "not configured"
+    gemini_status = "configured" if GEMINI_API_KEY else "not configured"
 
     return jsonify({
         "status": "healthy" if mongo_status == "connected" else "unhealthy",
