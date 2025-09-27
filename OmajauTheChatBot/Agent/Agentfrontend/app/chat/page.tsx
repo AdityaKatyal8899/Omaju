@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { Header } from "@/components/header"
 import { ChatWindow } from "@/components/chat-window"
 import { SidebarNested, type ChatItem, type ConvoItem } from "@/components/sidebar-nested"
+import { Spinner } from "@/components/spinner"
 import { createChat, createConvo, getChats, getConvos, deleteChat, deleteConvo } from "@/lib/api"
 
 export default function ChatPage() {
@@ -240,14 +241,14 @@ export default function ChatPage() {
   if (redirecting) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-        <span className="loader" />
+        <Spinner />
       </div>
     )
   }
 
   if (!authChecked) return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <span className="loader" />
+      <Spinner />
     </div>
   )
 
@@ -334,7 +335,7 @@ export default function ChatPage() {
           <div className="w-full sm:w-[960px] max-w-full max-[430px]:max-w-[430px] max-[375px]:max-w-[375px]">
             {uiLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-                <span className="loader" />
+                <Spinner />
               </div>
             )}
             <ChatWindow
