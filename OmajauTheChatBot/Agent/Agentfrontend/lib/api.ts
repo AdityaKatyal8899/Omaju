@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_CHAT_API_URL as string
 const SIGNUP_FRONTEND_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'http://localhost:3001'
 
 export interface ChatMessage {

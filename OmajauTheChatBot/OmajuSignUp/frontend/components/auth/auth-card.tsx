@@ -70,8 +70,9 @@ export function AuthCard({ mode, onSubmit }: Props) {
 
       // Redirect to Agent (3000) callback with tokens and preserve optional next param
       const url = new URL(window.location.href)
-      const nextParam = url.searchParams.get("next") || "http://localhost:3000/"
-      const callbackUrl = `http://localhost:3000/auth/callback?token=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}&next=${encodeURIComponent(nextParam)}`
+      const chatBase = process.env.NEXT_PUBLIC_CHAT_URL || "http://localhost:3000"
+      const nextParam = url.searchParams.get("next") || `${chatBase}/`
+      const callbackUrl = `${chatBase}/auth/callback?token=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}&next=${encodeURIComponent(nextParam)}`
       window.location.href = callbackUrl
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed")

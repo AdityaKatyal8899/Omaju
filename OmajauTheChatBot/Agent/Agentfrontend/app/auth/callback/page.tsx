@@ -34,8 +34,8 @@ export default function AgentAuthCallback() {
       }
     } else {
       // Missing token -> go to sign-up
-      const signupBase = process.env.NEXT_PUBLIC_SIGNUP_URL || 'http://localhost:3001'
-      const returnTo = typeof window !== 'undefined' ? window.location.origin + '/chat' : 'http://localhost:3000/chat'
+      const signupBase = process.env.NEXT_PUBLIC_SIGNUP_URL as string
+      const returnTo = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
       window.location.href = `${signupBase}/sign-up?next=${encodeURIComponent(returnTo)}`
     }
   }, [router, searchParams])

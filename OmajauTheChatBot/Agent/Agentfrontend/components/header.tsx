@@ -52,7 +52,7 @@ export function Header({ showNav = true, showBack = false, backHref = "/", showN
   const [userEmail, setUserEmail] = useState<string>("")
   const [avatarUrl, setAvatarUrl] = useState<string>("")
   const [profileLoaded, setProfileLoaded] = useState<boolean>(false)
-  const AUTH_API_BASE = (process.env.NEXT_PUBLIC_AUTH_API_BASE || "http://localhost:5001/api") + "/auth"
+  const AUTH_API_BASE = process.env.NEXT_PUBLIC_AUTH_API_BASE as string
 
   const onBgChange = (mode: typeof bgMode) => {
     setBgMode(mode)

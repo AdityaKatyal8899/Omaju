@@ -15,9 +15,9 @@ export default function ChatPage() {
   // Auth gating
   const [authChecked, setAuthChecked] = useState<boolean>(false)
   const [redirecting, setRedirecting] = useState<boolean>(false)
-  // OmajuSignUp endpoints (can be overridden by env at build-time)
-  const SIGNUP_FRONTEND_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || "http://localhost:3001"
-  const AUTH_API_BASE = (process.env.NEXT_PUBLIC_AUTH_API_BASE)
+  // OmajuSignUp endpoints (must be provided via env at build-time)
+  const SIGNUP_FRONTEND_URL = process.env.NEXT_PUBLIC_SIGNUP_URL as string
+  const AUTH_API_BASE = process.env.NEXT_PUBLIC_AUTH_API_BASE as string
   // Sidebar layout: two fixed states only
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('sidebar_collapsed') : null
@@ -36,7 +36,7 @@ export default function ChatPage() {
         const refreshToken = localStorage.getItem('refreshToken')
         if (!accessToken || !refreshToken) {
           // No tokens → redirect to sign-up
-          const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : 'http://localhost:3000/chat'
+          const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
           setRedirecting(true)
           window.location.href = `${SIGNUP_FRONTEND_URL}/sign-up?next=${encodeURIComponent(nextUrl)}`
           return
@@ -53,7 +53,7 @@ export default function ChatPage() {
 
         if (!res.ok) {
           // Token invalid or expired → redirect to sign-up
-          const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : 'http://localhost:3000/chat'
+          const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
           setRedirecting(true)
           window.location.href = `${SIGNUP_FRONTEND_URL}/sign-up?next=${encodeURIComponent(nextUrl)}`
           return
@@ -67,7 +67,7 @@ export default function ChatPage() {
         setAuthChecked(true)
       } catch (e) {
         // Network or other error → fail closed to sign-up
-        const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : 'http://localhost:3000/chat'
+        const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
         setRedirecting(true)
         window.location.href = `${SIGNUP_FRONTEND_URL}/sign-up?next=${encodeURIComponent(nextUrl)}`
       }

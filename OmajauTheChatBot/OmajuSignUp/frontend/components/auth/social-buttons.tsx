@@ -15,7 +15,8 @@ export function SocialButtons({ onGoogle, onGithub }: Props) {
       onGoogle();
     } else {
       const url = new URL(window.location.href)
-      const next = url.searchParams.get('next') || 'http://localhost:3000/chat'
+      const chatBase = process.env.NEXT_PUBLIC_CHAT_URL || 'http://localhost:3000'
+      const next = url.searchParams.get('next') || `${chatBase}/chat`
       window.location.href = `${BASE_URL}/api/auth/google?next=${encodeURIComponent(next)}`;
     }
   };
@@ -25,7 +26,8 @@ export function SocialButtons({ onGoogle, onGithub }: Props) {
       onGithub();
     } else {
       const url = new URL(window.location.href)
-      const next = url.searchParams.get('next') || 'http://localhost:3000/chat'
+      const chatBase = process.env.NEXT_PUBLIC_CHAT_URL || 'http://localhost:3000'
+      const next = url.searchParams.get('next') || `${chatBase}/chat`
       window.location.href = `${BASE_URL}/api/auth/github?next=${encodeURIComponent(next)}`;
     }
   };
