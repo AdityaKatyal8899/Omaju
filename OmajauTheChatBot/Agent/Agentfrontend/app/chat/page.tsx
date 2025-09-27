@@ -17,7 +17,7 @@ export default function ChatPage() {
   const [redirecting, setRedirecting] = useState<boolean>(false)
   // OmajuSignUp endpoints (can be overridden by env at build-time)
   const SIGNUP_FRONTEND_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || "http://localhost:3001"
-  const AUTH_API_BASE = (process.env.NEXT_PUBLIC_AUTH_API_BASE || "http://localhost:5001/api") + "/auth"
+  const AUTH_API_BASE = (process.env.NEXT_PUBLIC_AUTH_API_BASE)
   // Sidebar layout: two fixed states only
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('sidebar_collapsed') : null
