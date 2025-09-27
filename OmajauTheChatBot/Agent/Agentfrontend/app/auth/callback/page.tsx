@@ -17,6 +17,10 @@ export default function AgentAuthCallback() {
       try {
         localStorage.setItem('accessToken', token)
         localStorage.setItem('refreshToken', refreshToken)
+        console.debug('[auth-callback] tokens saved', {
+          hasAccess: !!localStorage.getItem('accessToken'),
+          hasRefresh: !!localStorage.getItem('refreshToken')
+        })
       } catch (e) {
         console.error('Failed to persist auth tokens:', e)
       }

@@ -60,7 +60,7 @@ const corsOptions = {
         'http://127.0.0.1:3001',
         'https://omaju-onboarding.vercel.app',
         'https://omaju-onboarding.onrender.com',   // add this
-        'https://omaju-chat-adityakatyal.vercel.app',
+        'https://omaju-chatinterface-adityakatyal.vercel.app',
         process.env.FRONTEND_URL,
 ].filter(Boolean);
 
