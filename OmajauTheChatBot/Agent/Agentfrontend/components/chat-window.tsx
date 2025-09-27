@@ -25,6 +25,7 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
   useEffect(() => {
     let mounted = true
     async function fetchMessages() {
+      if (!sessionId) return
       try {
         const conversation = await getConversationHistory(sessionId)
         if (!mounted) return
@@ -48,6 +49,14 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
   }, [messages])
 
   const handleSend = async (text: string) => {
+    if (!sessionId) {
+      toast({
+        title: "Setting things up…",
+        description: "Please wait a moment while we initialize your session.",
+        duration: 1800,
+      })
+      return
+    }
     const userMsg: Message = { role: "user", content: text, timestamp: new Date().toISOString() }
     setMessages(prev => [...prev, userMsg])
     try { onAnyMessage?.('user') } catch {}
@@ -108,7 +117,7 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
       <div className="flex-1 overflow-y-auto no-scrollbar px-2 sm:px-4 pt-20 sm:pt-24 pb-28 sm:pb-40">
         {!hasMessages ? (
           <div className="mx-auto flex h-full max-w-3xl items-center justify-center">
-            <EmptyState onSend={handleSend} disabled={isLoading} />
+            <EmptyState onSend={handleSend} disabled={isLoading || !sessionId} />
           </div>
         ) : (
           // MOBILE: align to left with mx-0 + px-1 so bubbles don't touch screen edge; DESKTOP: center with mx-auto
@@ -123,7 +132,7 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
           </div>
         )}
       </div>
-      {hasMessages && <InputBox onSend={handleSend} disabled={isLoading} />}
+      {hasMessages && <InputBox onSend={handleSend} disabled={isLoading || !sessionId} />}
     </section>
   )
 }
