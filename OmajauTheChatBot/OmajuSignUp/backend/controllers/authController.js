@@ -149,12 +149,10 @@ const googleOAuthSuccess = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    // Fire welcome email, but don't block redirect on failure
-    try {
-      await sendWelcomeEmail(user.email, user.name);
-    } catch (e) {
+    // Fire welcome email asynchronously; do not block redirect
+    Promise.resolve(sendWelcomeEmail(user.email, user.name)).catch((e) => {
       console.warn('Welcome email failed (google oauth):', e?.message || e);
-    }
+    });
 
     const base = process.env.AGENT_FRONTEND_URL || 'http://localhost:3000/auth/callback';
     const nextParam = req.query.state ? `&next=${encodeURIComponent(req.query.state)}` : '';
@@ -178,12 +176,10 @@ const githubOAuthSuccess = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    // Fire welcome email, but don't block redirect on failure
-    try {
-      await sendWelcomeEmail(user.email, user.name);
-    } catch (e) {
+    // Fire welcome email asynchronously; do not block redirect
+    Promise.resolve(sendWelcomeEmail(user.email, user.name)).catch((e) => {
       console.warn('Welcome email failed (github oauth):', e?.message || e);
-    }
+    });
 
     const base = process.env.AGENT_FRONTEND_URL || "https://omaju-chatinterface-adityakatyal.vercel.app/auth/callback";
     const nextParam = req.query.state ? `&next=${encodeURIComponent(req.query.state)}` : '';
