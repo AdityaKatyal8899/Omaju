@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <h1 className="text-4xl font-bold mb-4">Welcome to <span className="text-cyan-400">Omaju</span> <span className="text-yellow-500">boarding page</span></h1>
-      <p className="text-lg text-muted-foreground mb-8">Sign in or sign up to get started with instant transcription.</p>
+      <p className="text-lg text-muted-foreground mb-8">Sign in or sign up to get started.</p>
       <div className="flex gap-4">
         <Link href="/sign-in" className="px-6 py-2 font-semibold leading-8 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition">
           Sign In

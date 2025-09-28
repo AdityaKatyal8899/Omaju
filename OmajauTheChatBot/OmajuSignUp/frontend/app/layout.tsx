@@ -9,7 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth"
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
-  title: "Speech to Text",
+  title: "Omaju OnBoarding",
 }
 
 export default function RootLayout({
