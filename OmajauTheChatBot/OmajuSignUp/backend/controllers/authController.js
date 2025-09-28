@@ -1,5 +1,6 @@
 const { EmailUser, GoogleUser, GithubUser, findUserAcrossCollections, findUserByProviderId } = require('../models/User');
 const { generateTokens, verifyRefreshToken } = require('../middleware/auth');
+const { sendWelcomeEmail } = require('../utils/mailer');
 
 // ========================
 // Email/Password Signup
@@ -18,6 +19,13 @@ const signup = async (req, res) => {
 
     newUser.lastLogin = new Date();
     await newUser.save();
+
+    // Send welcome email (non-blocking failure)
+    try {
+      await sendWelcomeEmail(newUser.email, newUser.name);
+    } catch (e) {
+      console.warn('Welcome email failed (signup):', e?.message || e);
+    }
 
     res.status(201).json({
       success: true,
@@ -78,6 +86,13 @@ const signin = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
+    // Send welcome email (non-blocking failure)
+    try {
+      await sendWelcomeEmail(user.email, user.name);
+    } catch (e) {
+      console.warn('Welcome email failed (signin):', e?.message || e);
+    }
+
     res.json({
       success: true,
       message: 'Login successful',
@@ -134,6 +149,13 @@ const googleOAuthSuccess = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
+    // Fire welcome email, but don't block redirect on failure
+    try {
+      await sendWelcomeEmail(user.email, user.name);
+    } catch (e) {
+      console.warn('Welcome email failed (google oauth):', e?.message || e);
+    }
+
     const base = process.env.AGENT_FRONTEND_URL || 'http://localhost:3000/auth/callback';
     const nextParam = req.query.state ? `&next=${encodeURIComponent(req.query.state)}` : '';
     res.redirect(`${base}?token=${accessToken}&refreshToken=${refreshToken}&provider=google${nextParam}`);
@@ -155,6 +177,13 @@ const githubOAuthSuccess = async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user.email);
     user.lastLogin = new Date();
     await user.save();
+
+    // Fire welcome email, but don't block redirect on failure
+    try {
+      await sendWelcomeEmail(user.email, user.name);
+    } catch (e) {
+      console.warn('Welcome email failed (github oauth):', e?.message || e);
+    }
 
     const base = process.env.AGENT_FRONTEND_URL || "https://omaju-chatinterface-adityakatyal.vercel.app/auth/callback";
     const nextParam = req.query.state ? `&next=${encodeURIComponent(req.query.state)}` : '';
