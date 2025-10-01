@@ -340,13 +340,6 @@ def loader_page():
     """
     return html, 200, {"Content-Type": "text/html; charset=utf-8"}
 
-    if not user_obj:
-        return (jsonify({"success": False, "message": "Unauthorized"}), 401)
-    auth_uid = user_obj.get("_id") or user_obj.get("id") or user_obj.get("uid")
-    if uid_from_path != str(auth_uid):
-        return (jsonify({"success": False, "message": "Forbidden"}), 403)
-    return None
-
 
 @app.route("/chats/<uid>", methods=["GET"])
 def list_chats(uid):
