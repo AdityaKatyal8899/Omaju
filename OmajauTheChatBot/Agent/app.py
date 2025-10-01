@@ -403,23 +403,18 @@ def create_convo(chat_id):
     # Create new session id if not provided
     body = request.get_json(silent=True) or {}
     session_id = body.get("session_id") or f"session_{int(datetime.utcnow().timestamp()*1000)}"
-    greeting = {
-        "role": "assistant",
-        "content": "Hey! I am Omaju, your buddy.",
-        "timestamp": datetime.utcnow()
-    }
     convos_col.insert_one({
         "_id": session_id,
         "chat_id": chat_id,
         "created_at": datetime.utcnow(),
-        "messages": [greeting]
+        "messages": []
     })
     chats_col.update_one({"_id": chat_id}, {"$set": {"updated_at": datetime.utcnow()}})
     return jsonify({
         "_id": session_id,
         "chat_id": chat_id,
         "created_at": datetime.utcnow().isoformat(),
-        "messages": [greeting]
+        "messages": []
     }), 201
 
 

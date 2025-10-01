@@ -25,7 +25,7 @@ export function TypingIndicator({ className }: TypingIndicatorProps) {
     <div
       ref={wrapRef}
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm",
+        "fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm",
         "transition-opacity",
         className
       )}
