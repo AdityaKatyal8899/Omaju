@@ -238,23 +238,23 @@ def get_messages(session_id):
 
     # Fallback to legacy
     legacy = conversations.find_one({"session_id": session_id})
-    if not legacy:
-        # New session → create it with Omaju's greeting in legacy for BC
-        greeting = {
-            "role": "assistant",
-            "content": "Hey! I am **Omaju**, your buddy for lone times. How may I help?",
-            "timestamp": datetime.utcnow()
-        }
-        conversations.insert_one({
-            "session_id": session_id,
-            "created_at": datetime.utcnow(),
-            "messages": [greeting]
-        })
-        return jsonify({
-            "session_id": session_id,
-            "created_at": datetime.utcnow().isoformat(),
-            "messages": [greeting]
-        })
+    # if not legacy:
+    #     # New session → create it with Omaju's greeting in legacy for BC
+    #     greeting = {
+    #         "role": "assistant",
+    #         "content": "Hey! I am **Omaju**, your buddy for lone times. How may I help?",
+    #         "timestamp": datetime.utcnow()
+    #     }
+    #     conversations.insert_one({
+    #         "session_id": session_id,
+    #         "created_at": datetime.utcnow(),
+    #         "messages": [greeting]
+    #     })
+    #     return jsonify({
+    #         "session_id": session_id,
+    #         "created_at": datetime.utcnow().isoformat(),
+    #         "messages": [greeting]
+    #     })
     return jsonify(legacy)
 
 # Clear a session's messages
