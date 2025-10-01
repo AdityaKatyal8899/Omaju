@@ -311,35 +311,34 @@ def genai_health():
 
 @app.route("/loader", methods=["GET"])
 def loader_page():
-    """Simple HTML page that shows the Uiverse spinner, useful to verify loader rendering from backend."""
-    html = """
-<!doctype html>
-<html lang=\"en\">
-  <head>
-    <meta charset=\"utf-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-    <title>Omaju Loader</title>
-    <style>
-      /* Page is transparent; use overlay to blur whatever is behind */
-      html, body { height: 100%; margin: 0; background: transparent; }
-      .overlay { position: fixed; inset: 0; display: grid; place-items: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-      /* From Uiverse.io by Shoh2008 */
-      .loader { display: block; width: 84px; height: 84px; position: relative; }
-      .loader:before, .loader:after { content: ""; position: absolute; left: 50%; bottom: 0; width: 64px; height: 64px; border-radius: 50%; background: #FFFFFF; transform: translate(-50% , -100%) scale(0); animation: push_401 2s infinite linear; }
-      .loader:after { animation-delay: 1s; }
-      @keyframes push_401 { 0%, 50% { transform: translate(-50% , 0%) scale(1) } 100% { transform: translate(-50%, -100%) scale(0) } }
-    </style>
-  </head>
-  <body>
-    <div class=\"overlay\" role=\"status\" aria-label=\"Loading\">
-      <span class=\"loader\"></span>
-    </div>
-  </body>
- </html>
-    """
-    return html, 200, {"Content-Type": "text/html; charset=utf-8"}
+#     """Simple HTML page that shows the Uiverse spinner, useful to verify loader rendering from backend."""
+# #     html = """
+# # <!doctype html>
+# # <html lang=\"en\">
+# #   <head>
+# #     <meta charset=\"utf-8\">
+# #     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+# #     <title>Omaju Loader</title>
+# #     <style>
+# #       /* Page is transparent; use overlay to blur whatever is behind */
+# #       html, body { height: 100%; margin: 0; background: transparent; }
+# #       .overlay { position: fixed; inset: 0; display: grid; place-items: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+# #       /* From Uiverse.io by Shoh2008 */
+# #       .loader { display: block; width: 84px; height: 84px; position: relative; }
+# #       .loader:before, .loader:after { content: ""; position: absolute; left: 50%; bottom: 0; width: 64px; height: 64px; border-radius: 50%; background: #FFFFFF; transform: translate(-50% , -100%) scale(0); animation: push_401 2s infinite linear; }
+# #       .loader:after { animation-delay: 1s; }
+# #       @keyframes push_401 { 0%, 50% { transform: translate(-50% , 0%) scale(1) } 100% { transform: translate(-50%, -100%) scale(0) } }
+# #     </style>
+# #   </head>
+# #   <body>
+# #     <div class=\"overlay\" role=\"status\" aria-label=\"Loading\">
+# #       <span class=\"loader\"></span>
+# #     </div>
+# #   </body>
+# #  </html>
+# #     """
+#     return html, 200, {"Content-Type": "text/html; charset=utf-8"}
 
-    """If a uid is present in path, ensure it matches the authenticated user."""
     if not user_obj:
         return (jsonify({"success": False, "message": "Unauthorized"}), 401)
     auth_uid = user_obj.get("_id") or user_obj.get("id") or user_obj.get("uid")
