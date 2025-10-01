@@ -1,6 +1,5 @@
 "use client"
-import React, { useEffect, useRef } from "react"
-import gsap from "gsap"
+import React from "react"
 import { cn } from "@/lib/utils"
 
 interface TypingIndicatorProps {
@@ -8,65 +7,30 @@ interface TypingIndicatorProps {
 }
 
 export function TypingIndicator({ className }: TypingIndicatorProps) {
-  const wrapRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (!wrapRef.current) return
-    const tl = gsap.timeline()
-    tl.fromTo(
-      wrapRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.25, ease: "power2.out" }
-    )
-    return () => { tl.kill() }
-  }, [])
-
   return (
-    <div
-      ref={wrapRef}
-      className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm",
-        "transition-opacity",
-        className
-      )}
-      role="status"
-      aria-live="polite"
-      aria-label="Assistant is typing"
-    >
-      {/* Loader from Uiverse.io by Shoh2008 */}
-      <span className="loader" />
+    <div className={cn("inline-flex items-center", className)} role="status" aria-label="Assistant is typing">
+      <div className="rounded-2xl bg-muted text-foreground/90 ring-1 ring-border px-3 py-2 shadow-sm">
+        <div className="flex items-center gap-1.5">
+          <span className="dot" />
+          <span className="dot" />
+          <span className="dot" />
+        </div>
+      </div>
       <style jsx>{`
-        .loader {
+        .dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 9999px;
+          background: currentColor;
+          opacity: 0.6;
           display: block;
-          width: 84px;
-          height: 84px;
-          position: relative;
+          animation: bounce 1.2s infinite ease-in-out;
         }
-
-        .loader:before, .loader:after {
-          content: "";
-          position: absolute;
-          left: 50%;
-          bottom: 0;
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-          background: #FFF;
-          transform: translate(-50% , -100%) scale(0);
-          animation: push_401 2s infinite linear;
-        }
-
-        .loader:after {
-          animation-delay: 1s;
-        }
-
-        @keyframes push_401 {
-          0%, 50% {
-            transform: translate(-50%, 0%) scale(1);
-          }
-          100% {
-            transform: translate(-50%, -100%) scale(0);
-          }
+        .dot:nth-child(2) { animation-delay: 0.15s; }
+        .dot:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+          40% { transform: translateY(-4px); opacity: 1; }
         }
       `}</style>
     </div>
