@@ -8,30 +8,67 @@ interface TypingIndicatorProps {
 }
 
 export function TypingIndicator({ className }: TypingIndicatorProps) {
-  const dotsRef = useRef<HTMLDivElement | null>(null)
+  const wrapRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    if (!dotsRef.current) return
-    const dots = dotsRef.current.querySelectorAll("span")
-    const tl = gsap.timeline({ repeat: -1 })
-    tl.to(dots, { opacity: 0.3, stagger: 0.12, duration: 0.25, ease: "power1.inOut" })
-      .to(dots, { opacity: 1, stagger: 0.12, duration: 0.25, ease: "power1.inOut" }, 0.12)
+    if (!wrapRef.current) return
+    const tl = gsap.timeline()
+    tl.fromTo(
+      wrapRef.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.25, ease: "power2.out" }
+    )
     return () => { tl.kill() }
   }, [])
 
   return (
-    <div className={cn("inline-flex items-center gap-1", className)}>
-      <div
-        className="rounded-3xl bg-[#1b263b] text-white ring-1 ring-white/10 px-4 py-2 shadow-md"
-        aria-live="polite"
-        aria-label="Assistant is typing"
-      >
-        <div ref={dotsRef} className="flex items-center gap-1">
-          <span className="block h-2 w-2 rounded-full bg-white/80" />
-          <span className="block h-2 w-2 rounded-full bg-white/80" />
-          <span className="block h-2 w-2 rounded-full bg-white/80" />
-        </div>
-      </div>
+    <div
+      ref={wrapRef}
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm",
+        "transition-opacity",
+        className
+      )}
+      role="status"
+      aria-live="polite"
+      aria-label="Assistant is typing"
+    >
+      {/* Loader from Uiverse.io by Shoh2008 */}
+      <span className="loader" />
+      <style jsx>{`
+        .loader {
+          display: block;
+          width: 84px;
+          height: 84px;
+          position: relative;
+        }
+
+        .loader:before, .loader:after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: #FFF;
+          transform: translate(-50% , -100%) scale(0);
+          animation: push_401 2s infinite linear;
+        }
+
+        .loader:after {
+          animation-delay: 1s;
+        }
+
+        @keyframes push_401 {
+          0%, 50% {
+            transform: translate(-50%, 0%) scale(1);
+          }
+          100% {
+            transform: translate(-50%, -100%) scale(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }

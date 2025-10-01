@@ -128,14 +128,12 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
             {messages.map((m, i) => (
               <MessageBubble key={i} msg={m} />
             ))}
-            {isLoading && (
-              <div className="flex justify-start"><TypingIndicator /></div>
-            )}
             <div ref={tailRef} />
           </div>
         )}
       </div>
       {hasMessages && <InputBox onSend={handleSend} disabled={isLoading || !sessionId} />}
+      {isLoading && <TypingIndicator />}
     </section>
   )
 }
