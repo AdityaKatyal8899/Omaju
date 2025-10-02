@@ -8,6 +8,8 @@ import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { Toaster as ShadToaster } from "@/components/ui/toaster";
 import { Work_Sans, Poppins, Open_Sans } from "next/font/google";
 import { Spinner } from "@/components/spinner";
+import dynamic from "next/dynamic";
+const WindowLoaderOverlay = dynamic(() => import("@/components/WindowLoaderOverlay"), { ssr: false });
 
 // Brand fonts
 const workSans = Work_Sans({ subsets: ["latin"], variable: "--font-work-sans" });
@@ -41,6 +43,8 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </Suspense>
+        {/* Non-blocking background loader for initial load and window resizing */}
+        <WindowLoaderOverlay />
         {process.env.NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS === 'true' && <Analytics />}
         <SonnerToaster richColors position="top-right" />
         <ShadToaster />
