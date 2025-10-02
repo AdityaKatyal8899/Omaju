@@ -79,6 +79,8 @@ export async function sendChatMessage(message: ChatMessage): Promise<ChatRespons
     if (response.status === 401) {
       handleUnauthorized()
     }
+    // Non-intrusive diagnostics
+    try { console.error('[api] POST /chat failed', { base: API_BASE_URL, status: response.status }) } catch {}
     throw new ApiError(response.status, `HTTP error! status: ${response.status}`)
   }
 
@@ -98,6 +100,7 @@ export async function getConversationHistory(sessionId: string): Promise<Convers
     if (response.status === 401) {
       handleUnauthorized()
     }
+    try { console.error('[api] GET /messages/:sessionId failed', { base: API_BASE_URL, sessionId, status: response.status }) } catch {}
     throw new ApiError(response.status, `HTTP error! status: ${response.status}`)
   }
   return response.json()
@@ -106,7 +109,10 @@ export async function getConversationHistory(sessionId: string): Promise<Convers
 // Check backend health
 export async function checkHealth(): Promise<{ status: string; mongodb: string; genai: string; timestamp: string }> {
   const response = await fetch(`${API_BASE_URL}/health`)
-  if (!response.ok) throw new ApiError(response.status, `HTTP error! status: ${response.status}`)
+  if (!response.ok) {
+    try { console.error('[api] GET /health failed', { base: API_BASE_URL, status: response.status }) } catch {}
+    throw new ApiError(response.status, `HTTP error! status: ${response.status}`)
+  }
   return response.json()
 }
 
@@ -119,6 +125,7 @@ export async function getChats(uid: string): Promise<ChatTitle[]> {
   const res = await fetch(`${API_BASE_URL}/chats/${uid}`, { headers })
   if (!res.ok) {
     if (res.status === 401) handleUnauthorized()
+    try { console.error('[api] GET /chats/:uid failed', { base: API_BASE_URL, uid, status: res.status }) } catch {}
     throw new ApiError(res.status, 'Failed to fetch chats')
   }
   return res.json()
@@ -135,6 +142,7 @@ export async function createChat(uid: string, title: string): Promise<ChatTitle>
   })
   if (!res.ok) {
     if (res.status === 401) handleUnauthorized()
+    try { console.error('[api] POST /chats/:uid failed', { base: API_BASE_URL, uid, status: res.status }) } catch {}
     throw new ApiError(res.status, 'Failed to create chat')
   }
   return res.json()
@@ -147,6 +155,7 @@ export async function getConvos(chatId: string): Promise<ConvoMeta[]> {
   const res = await fetch(`${API_BASE_URL}/convos/${chatId}`, { headers })
   if (!res.ok) {
     if (res.status === 401) handleUnauthorized()
+    try { console.error('[api] GET /convos/:chatId failed', { base: API_BASE_URL, chatId, status: res.status }) } catch {}
     throw new ApiError(res.status, 'Failed to fetch convos')
   }
   return res.json()
@@ -159,6 +168,7 @@ export async function createConvo(chatId: string): Promise<ConversationHistory> 
   const res = await fetch(`${API_BASE_URL}/convos/${chatId}`, { method: 'POST', headers })
   if (!res.ok) {
     if (res.status === 401) handleUnauthorized()
+    try { console.error('[api] POST /convos/:chatId failed', { base: API_BASE_URL, chatId, status: res.status }) } catch {}
     throw new ApiError(res.status, 'Failed to create convo')
   }
   return res.json()
@@ -175,6 +185,7 @@ export async function appendMessages(sessionId: string, messages: ConversationHi
   })
   if (!res.ok) {
     if (res.status === 401) handleUnauthorized()
+    try { console.error('[api] PATCH /convos/:sessionId/messages failed', { base: API_BASE_URL, sessionId, status: res.status }) } catch {}
     throw new ApiError(res.status, 'Failed to append messages')
   }
   return res.json()
@@ -190,6 +201,7 @@ export async function deleteChat(chatId: string): Promise<{ success: boolean }> 
   const res = await fetch(`${API_BASE_URL}/chats/${chatId}`, { method: 'DELETE', headers })
   if (!res.ok) {
     if (res.status === 401) handleUnauthorized()
+    try { console.error('[api] DELETE /chats/:chatId failed', { base: API_BASE_URL, chatId, status: res.status }) } catch {}
     throw new ApiError(res.status, 'Failed to delete chat')
   }
   return res.json()
@@ -202,6 +214,14 @@ export async function deleteConvo(sessionId: string): Promise<{ success: boolean
   const res = await fetch(`${API_BASE_URL}/convos/${sessionId}`, { method: 'DELETE', headers })
   if (!res.ok) {
     if (res.status === 401) handleUnauthorized()
+    try { 
+      console.error('[api] DELETE /convos/:sessionId failed', { 
+        method: 'DELETE', 
+        url: `${API_BASE_URL}/convos/${sessionId}`, 
+        status: res.status, 
+        message: 'Failed to delete session' 
+      }) 
+    } catch {}
     throw new ApiError(res.status, 'Failed to delete session')
   }
   return res.json()
