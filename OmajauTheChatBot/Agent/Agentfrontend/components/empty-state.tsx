@@ -1,10 +1,6 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react"
-<<<<<<< HEAD
 import { Plus, SendHorizonal } from "lucide-react"
-=======
-import { Mic, Plus, SendHorizonal } from "lucide-react"
->>>>>>> parent of 02884cf (1/10/25)
 import { cn } from "@/lib/utils"
 import gsap from "gsap"
 

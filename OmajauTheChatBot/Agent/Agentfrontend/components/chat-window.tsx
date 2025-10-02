@@ -6,7 +6,7 @@ import { MessageBubble, type Message } from "./message-bubble"
 import { InputBox } from "./input-box"
 import { EmptyState } from "./empty-state"
 import { useToast } from "@/components/ui/use-toast"
-import { TypingIndicator } from "./typing-indicator"
+import { BackgroundLoader } from "./background-loader"
 
 interface ChatWindowProps {
   sessionId: string
@@ -117,7 +117,10 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
     <section className="flex h-full w-full flex-col">
       {/* MOBILE: left padding via px-2; DESKTOP: px-4 keeps wider gutters */}
       {/* Messages scroller: large top padding for sticky header, generous bottom padding for sticky input (responsive on mobile) */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-2 sm:px-4 pt-20 sm:pt-24 pb-28 sm:pb-40">
+      <div className="flex-1 overflow-y-auto no-scrollbar px-2 sm:px-4 pt-20 sm:pt-24 pb-28 sm:pb-40 relative">
+        {isLoading && (
+          <BackgroundLoader />
+        )}
         {!hasMessages ? (
           <div className="mx-auto flex h-full max-w-3xl items-center justify-center">
             <EmptyState onSend={handleSend} disabled={isLoading || !sessionId} />
@@ -128,9 +131,6 @@ export function ChatWindow({ sessionId, chatId, onFirstUserMessage, onAnyMessage
             {messages.map((m, i) => (
               <MessageBubble key={i} msg={m} />
             ))}
-            {isLoading && (
-              <div className="flex justify-start"><TypingIndicator /></div>
-            )}
             <div ref={tailRef} />
           </div>
         )}

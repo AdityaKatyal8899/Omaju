@@ -247,6 +247,20 @@ export default function ChatPage() {
     } finally { setUiLoading(false) }
   }
 
+  // Rename chat with optimistic UI and backend persistence
+  const onRenameChat = async (chatId: string, title: string) => {
+    const prevState = chats
+    setChats(prev => prev.map(c => c.id === chatId ? { ...c, title } : c))
+    try {
+      await updateChatTitle(chatId, title)
+      toast({ title: 'Chat renamed', duration: 1200 })
+    } catch (e: any) {
+      console.error('[chat] updateChatTitle failed', e)
+      setChats(prevState) // rollback
+      toast({ title: 'Rename failed', description: String(e?.message || e), variant: 'destructive', duration: 2500 })
+    }
+  }
+
   // Loading/redirect states
   if (redirecting) {
     return (
