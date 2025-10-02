@@ -5,8 +5,10 @@ import { ChatWindow } from "@/components/chat-window"
 import { SidebarNested, type ChatItem, type ConvoItem } from "@/components/sidebar-nested"
 import { Spinner } from "@/components/spinner"
 import { createChat, createConvo, getChats, getConvos, deleteChat, deleteConvo } from "@/lib/api"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function ChatPage() {
+  const { toast } = useToast()
   const [sessionId, setSessionId] = useState<string>("")
   const [uid, setUid] = useState<string>("")
   const [chats, setChats] = useState<ChatItem[]>([])
@@ -51,7 +53,7 @@ export default function ChatPage() {
         const accessToken = localStorage.getItem('accessToken')
         const refreshToken = localStorage.getItem('refreshToken')
         console.debug('[auth] tokens present?', { hasAccess: !!accessToken, hasRefresh: !!refreshToken })
-        console.debug('[auth] AUTH_API_BASE:', AUTH_API_BASE, 'SIGNUP_FRONTEND_URL:', SIGNUP_FRONTEND_URL)
+        console.debug('[auth] AUTH_API_BASE:', AUTH_API_BASE, 'SIGNUP_FRONTEND_URL:', SIGNUP_FRONTEND_URL, 'CHAT_API_URL:', process.env.NEXT_PUBLIC_CHAT_API_URL)
         if (!accessToken || !refreshToken) {
           // No tokens → redirect to sign-up
           const nextUrl = typeof window !== 'undefined' ? window.location.origin + '/chat' : '/chat'
@@ -134,8 +136,9 @@ export default function ChatPage() {
         setChats(mapped)
         // if no active chat, pick first
         if (!activeChatId && mapped.length) setActiveChatId(mapped[0].id)
-      } catch (e) {
-        // noop for now
+      } catch (e: any) {
+        console.error('[chat] getChats failed', e)
+        toast({ title: 'Failed to load chats', description: String(e?.message || e), variant: 'destructive', duration: 2500 })
       }
     })()
     return () => { mounted = false }
@@ -165,8 +168,10 @@ export default function ChatPage() {
           }))
           setSessionId(convo._id!)
         }
-      } catch (e) {
+      } catch (e: any) {
+        console.error('[chat] getConvos/createConvo failed', e)
         setConvosByChat(prev => ({ ...prev, [activeChatId]: [] }))
+        toast({ title: 'Failed to load conversations', description: String(e?.message || e), variant: 'destructive', duration: 2500 })
       } finally {
         setUiLoading(false)
       }
@@ -186,7 +191,10 @@ export default function ChatPage() {
       const convo = await createConvo(mapped.id)
       setConvosByChat(prev => ({ ...prev, [mapped.id]: [{ id: convo._id!, chat_id: mapped.id, created_at: convo.created_at as any }] }))
       setSessionId(convo._id!)
-    } catch {} finally { setUiLoading(false) }
+    } catch (e: any) {
+      console.error('[chat] createChat/createConvo failed', e)
+      toast({ title: 'Create chat failed', description: String(e?.message || e), variant: 'destructive', duration: 2500 })
+    } finally { setUiLoading(false) }
   }
 
   const onSelectChat = (chatId: string) => {
@@ -232,24 +240,23 @@ export default function ChatPage() {
         const next = (convosByChat[activeChatId] || []).find(c => c.id !== sessionIdToDelete)
         setSessionId(next?.id || "")
       }
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setUiLoading(false)
-    }
+    } catch (e: any) {
+      console.error('[chat] deleteConvo failed', e)
+      toast({ title: 'Delete session failed', description: String(e?.message || e), variant: 'destructive', duration: 2500 })
+    } finally { setUiLoading(false) }
   }
 
   // Loading/redirect states
   if (redirecting) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="fixed inset-0 z-50 grid place-items-center backdrop-blur-sm">
         <Spinner />
       </div>
     )
   }
 
   if (!authChecked) return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+    <div className="fixed inset-0 z-50 grid place-items-center backdrop-blur-sm">
       <Spinner />
     </div>
   )
@@ -336,7 +343,7 @@ export default function ChatPage() {
           {/* Mobile: shrink chat box on small devices; Desktop: keep 960px content width */}
           <div className="w-full sm:w-[960px] max-w-full max-[430px]:max-w-[430px] max-[375px]:max-w-[375px]">
             {uiLoading && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="fixed inset-0 z-50 grid place-items-center backdrop-blur-sm">
                 <Spinner />
               </div>
             )}

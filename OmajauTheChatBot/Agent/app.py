@@ -316,7 +316,9 @@ def loader_page():
 <!doctype html>
 <html lang=\"en\">
   <head>
-    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>Omaju Loader</title>
+    <meta charset=\"utf-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+    <title>Omaju Loader</title>
     <style>
       body { margin:0; height:100vh; display:flex; align-items:center; justify-content:center; background:#0b0b0b; color:#fff; }
       /* From Uiverse.io by satyamchaudharydev */
@@ -339,7 +341,6 @@ def loader_page():
  </html>
     """
     return html, 200, {"Content-Type": "text/html; charset=utf-8"}
-
 
 @app.route("/chats/<uid>", methods=["GET"])
 def list_chats(uid):
