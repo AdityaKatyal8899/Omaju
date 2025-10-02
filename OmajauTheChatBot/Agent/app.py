@@ -496,6 +496,39 @@ def delete_convo(session_id):
         return jsonify({"success": False, "message": "Session not found"}), 404
     return jsonify({"success": True})
 
+@app.route("/chats/<chat_id>", methods=["PATCH"])
+def update_chat_title(chat_id):
+    # Enforce auth
+    user, err = _validate_auth_or_401()
+    if err:
+        return err
+    # Ensure chat exists and belongs to user
+    chat = chats_col.find_one({"_id": chat_id})
+    if not chat:
+        return jsonify({"success": False, "message": "Chat not found"}), 404
+    auth_uid = (user or {}).get("_id") or (user or {}).get("id") or (user or {}).get("uid")
+    if str(chat.get("uid")) != str(auth_uid):
+        return jsonify({"success": False, "message": "Forbidden"}), 403
+
+    body = request.get_json(silent=True) or {}
+    title = (body.get("title") or "").strip()
+    if not title:
+        return jsonify({"success": False, "message": "title is required"}), 400
+
+    now = datetime.utcnow()
+    res = chats_col.update_one({"_id": chat_id}, {"$set": {"title": title, "updated_at": now}})
+    if res.matched_count == 0:
+        return jsonify({"success": False, "message": "Chat not found"}), 404
+    updated = chats_col.find_one({"_id": chat_id})
+    # Normalize datetime via encoder
+    return jsonify({
+        "_id": updated.get("_id"),
+        "uid": updated.get("uid"),
+        "title": updated.get("title"),
+        "created_at": updated.get("created_at"),
+        "updated_at": updated.get("updated_at"),
+    })
+
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 5000))  # Use Render’s port, fallback to 5000 locally
     app.run(host="0.0.0.0", port=PORT, debug=True)

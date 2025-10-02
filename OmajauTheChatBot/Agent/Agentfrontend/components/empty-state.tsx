@@ -1,6 +1,10 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react"
+<<<<<<< HEAD
 import { Plus, SendHorizonal } from "lucide-react"
+=======
+import { Mic, Plus, SendHorizonal } from "lucide-react"
+>>>>>>> parent of 02884cf (1/10/25)
 import { cn } from "@/lib/utils"
 import gsap from "gsap"
 
@@ -19,8 +23,8 @@ export function EmptyState({ onSend, disabled }: EmptyStateProps) {
     if (wrapRef.current) {
       gsap.fromTo(
         wrapRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
+        { opacity: 0, y: 8, scale: 0.99 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: "power2.out" }
       )
     }
   }, [])

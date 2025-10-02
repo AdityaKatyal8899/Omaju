@@ -4,6 +4,23 @@ if (!API_BASE_URL || API_BASE_URL === 'undefined') {
   // eslint-disable-next-line no-console
   console.error('[config] NEXT_PUBLIC_CHAT_API_URL is not set. API calls will fail.')
 }
+
+export async function updateChatTitle(chatId: string, title: string): Promise<ChatTitle> {
+  const token = getAccessToken()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  const res = await fetch(`${API_BASE_URL}/chats/${chatId}`, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify({ title }),
+  })
+  if (!res.ok) {
+    if (res.status === 401) handleUnauthorized()
+    try { console.error('[api] PATCH /chats/:chatId failed', { base: API_BASE_URL, chatId, status: res.status }) } catch {}
+    throw new ApiError(res.status, 'Failed to update chat title')
+  }
+  return res.json()
+}
 const SIGNUP_FRONTEND_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'http://localhost:3001'
 
 export interface ChatMessage {

@@ -4,7 +4,7 @@ import { Header } from "@/components/header"
 import { ChatWindow } from "@/components/chat-window"
 import { SidebarNested, type ChatItem, type ConvoItem } from "@/components/sidebar-nested"
 import { Spinner } from "@/components/spinner"
-import { createChat, createConvo, getChats, getConvos, deleteChat, deleteConvo } from "@/lib/api"
+import { createChat, createConvo, getChats, getConvos, deleteChat, deleteConvo, updateChatTitle } from "@/lib/api"
 import { useToast } from "@/components/ui/use-toast"
 
 export default function ChatPage() {
@@ -46,6 +46,7 @@ export default function ChatPage() {
         // Clean URL without reloading
         window.history.replaceState({}, document.title, url.toString())
       }
+
     } catch {}
 
     const verifyAuth = async () => {
@@ -292,6 +293,7 @@ export default function ChatPage() {
         onSelectConvo={onSelectConvo}
         onDeleteChat={onDeleteChat}
         onDeleteConvo={onDeleteConvo}
+        onRenameChat={onRenameChat}
       />
 
       {/* Shift header to the right by sidebar width (or 64px when collapsed) and shrink its width */}

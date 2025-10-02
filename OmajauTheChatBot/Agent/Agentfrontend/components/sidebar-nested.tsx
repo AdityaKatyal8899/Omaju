@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Plus, ChevronDown, ChevronRight, Trash2 } from "lucide-react"
+import { Plus, ChevronDown, ChevronRight, Trash2, Pencil, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
@@ -31,6 +31,7 @@ interface SidebarNestedProps {
   onCreateConvo?: (chatId: string) => void
   onDeleteChat?: (chatId: string) => void
   onDeleteConvo?: (sessionId: string) => void
+  onRenameChat?: (chatId: string, title: string) => Promise<void> | void
 }
 
 export function SidebarNested({
@@ -46,8 +47,11 @@ export function SidebarNested({
   onCreateConvo,
   onDeleteChat,
   onDeleteConvo,
+  onRenameChat,
 }: SidebarNestedProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  const [editingId, setEditingId] = useState<string>("")
+  const [editingTitle, setEditingTitle] = useState<string>("")
   const isCollapsed = collapsed ?? false
 
   const toggleChat = (chatId: string) => setExpanded(prev => ({ ...prev, [chatId]: !prev[chatId] }))
@@ -119,13 +123,55 @@ export function SidebarNested({
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     {isOpen ? <ChevronDown className="h-4 w-4 flex-shrink-0"/> : <ChevronRight className="h-4 w-4 flex-shrink-0"/>}
-                    {!isCollapsed && <div className="truncate">{chat.title}</div>}
+                    {!isCollapsed && (
+                      editingId === chat.id ? (
+                        <input
+                          autoFocus
+                          value={editingTitle}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={async (e) => {
+                            if (e.key === 'Enter') {
+                              const title = editingTitle.trim() || 'Untitled chat'
+                              try { await onRenameChat?.(chat.id, title) } finally {
+                                setEditingId("")
+                              }
+                            } else if (e.key === 'Escape') {
+                              setEditingId("")
+                            }
+                          }}
+                          className="truncate bg-transparent border-b border-border/60 focus:outline-none focus:border-foreground/60 text-sm max-w-[180px]"
+                          aria-label="Edit chat title"
+                        />
+                      ) : (
+                        <div className="truncate">{chat.title}</div>
+                      )
+                    )}
                   </div>
                   {!isCollapsed && (
                     <div className="flex items-center gap-1">
                       <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); onCreateConvo?.(chat.id) }}>
                         <Plus className="h-4 w-4" />
                       </Button>
+                      <button
+                        type="button"
+                        aria-label={`Edit chat ${chat.title}`}
+                        className="rounded p-1 text-foreground/70 opacity-0 transition-all hover:text-foreground group-hover:opacity-100 hover:bg-white/5"
+                        onClick={(e) => { e.stopPropagation(); setEditingId(chat.id); setEditingTitle(chat.title) }}
+                        title="Rename chat"
+                      >
+                        {editingId === chat.id ? <X className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                      </button>
+                      {editingId === chat.id && (
+                        <button
+                          type="button"
+                          aria-label="Save chat title"
+                          className="rounded p-1 text-green-400 transition-all hover:text-green-300 hover:bg-white/5"
+                          onClick={async (e) => { e.stopPropagation(); const title = editingTitle.trim() || 'Untitled chat'; try { await onRenameChat?.(chat.id, title) } finally { setEditingId("") } }}
+                        >
+                          <Check className="h-4 w-4" />
+                        </button>
+                      )}
                       <button
                         type="button"
                         aria-label={`Delete chat ${chat.title}`}
