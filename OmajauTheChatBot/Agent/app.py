@@ -112,6 +112,17 @@ def _validate_auth_or_401():
         print("[auth] error contacting auth service:", e)
         return None, (jsonify({"success": False, "message": "Auth service unavailable"}), 503)
 
+def _require_uid_match(uid_from_path, user_obj):
+    """Ensure the uid in the request path matches the authenticated user's id.
+    Returns an error response tuple on mismatch; otherwise returns None.
+    """
+    if not user_obj:
+        return (jsonify({"success": False, "message": "Unauthorized"}), 401)
+    auth_uid = user_obj.get("_id") or user_obj.get("id") or user_obj.get("uid")
+    if str(uid_from_path) != str(auth_uid):
+        return (jsonify({"success": False, "message": "Forbidden"}), 403)
+    return None
+
 # Root endpoint
 @app.route("/")
 def home():
