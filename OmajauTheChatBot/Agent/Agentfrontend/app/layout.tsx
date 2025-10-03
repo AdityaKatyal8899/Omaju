@@ -9,12 +9,13 @@ import { Toaster as ShadToaster } from "@/components/ui/toaster";
 import { Work_Sans, Poppins, Open_Sans } from "next/font/google";
 import { Spinner } from "@/components/spinner";
 import dynamic from "next/dynamic";
-import WindowLoaderOverlay from "@/components/WindowLoaderOverlayClient";
 
 // Brand fonts
 const workSans = Work_Sans({ subsets: ["latin"], variable: "--font-work-sans" });
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-poppins" });
 const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-open-sans" });
+
+import WindowLoaderOverlay from "@/components/WindowLoaderOverlay";
 
 export const metadata: Metadata = {
   title: "Omaju the Bot",
