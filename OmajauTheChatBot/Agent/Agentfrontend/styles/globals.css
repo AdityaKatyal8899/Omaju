@@ -122,7 +122,6 @@
   }
 }
 
-/* Loader styles (Uiverse by hoi-du) */
 .loader {
   width: 50px;
   height: 50px;
@@ -177,35 +176,4 @@
     border-radius: 50% 50% 50% 50%;
     transform: rotate(360deg);
   }
-}
-
-/* --- UI Tweaks for New Chat and Chat Title --- */
-
-/* New Chat button: keep text white on hover */
-.new-chat-btn {
-  color: #fff !important;
-  background: var(--primary);
-  transition: background 0.2s, color 0.2s;
-}
-.new-chat-btn:hover {
-  background: var(--primary-foreground);
-  color: #fff !important;
-}
-
-/* Chat title: force white in light mode */
-.chat-title {
-  color: #fff !important;
-  background: var(--primary);
-  transition: background 0.2s, color 0.2s;
-}
-.light .chat-title,
-:root:not(.dark) .chat-title {
-  color: #fff !important;
-  background: var(--primary);
-}
-
-/* Optional: chat title in dark mode for contrast */
-.dark .chat-title {
-  color: var(--primary-foreground) !important;
-  background: var(--primary);
 }
