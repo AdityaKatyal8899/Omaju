@@ -9,7 +9,7 @@ import { Toaster as ShadToaster } from "@/components/ui/toaster";
 import { Work_Sans, Poppins, Open_Sans } from "next/font/google";
 import { Spinner } from "@/components/spinner";
 import dynamic from "next/dynamic";
-const WindowLoaderOverlay = dynamic(() => import("@/components/WindowLoaderOverlay"), { ssr: false });
+import WindowLoaderOverlay from "@/components/WindowLoaderOverlayClient";
 
 // Brand fonts
 const workSans = Work_Sans({ subsets: ["latin"], variable: "--font-work-sans" });
