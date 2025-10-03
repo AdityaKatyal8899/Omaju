@@ -322,32 +322,69 @@ def genai_health():
 
 @app.route("/loader", methods=["GET"])
 def loader_page():
-    """Simple HTML page that shows the Uiverse spinner, useful to verify loader rendering from backend."""
+    """Simple HTML page that shows the Uiverse loader, useful to verify loader rendering from backend."""
     html = """
 <!doctype html>
-<html lang=\"en\">
+<html lang="en">
   <head>
-    <meta charset=\"utf-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Omaju Loader</title>
     <style>
       body { margin:0; height:100vh; display:flex; align-items:center; justify-content:center; background:#0b0b0b; color:#fff; }
-      /* From Uiverse.io by satyamchaudharydev */
-      .spinner { position: relative; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; border-radius: 50%; margin-left: -75px; }
-      .spinner span { position: absolute; top: 50%; left: var(--left); width: 35px; height: 7px; background: #ffff; animation: dominos 1s ease infinite; box-shadow: 2px 2px 3px 0px black; }
-      .spinner span:nth-child(1) { --left: 80px; animation-delay: 0.125s; }
-      .spinner span:nth-child(2) { --left: 70px; animation-delay: 0.3s; }
-      .spinner span:nth-child(3) { left: 60px; animation-delay: 0.425s; }
-      .spinner span:nth-child(4) { animation-delay: 0.54s; left: 50px; }
-      .spinner span:nth-child(5) { animation-delay: 0.665s; left: 40px; }
-      .spinner span:nth-child(6) { animation-delay: 0.79s; left: 30px; }
-      .spinner span:nth-child(7) { animation-delay: 0.915s; left: 20px; }
-      .spinner span:nth-child(8) { left: 10px; }
-      @keyframes dominos { 50% { opacity: 0.7; } 75% { transform: rotate(90deg); } 80% { opacity: 1; } }
+      /* From Uiverse.io by alexruix */
+      .loader {
+        position: relative;
+        width: 120px;
+        height: 90px;
+        margin: 0 auto;
+      }
+      .loader:before {
+        content: "";
+        position: absolute;
+        bottom: 30px;
+        left: 50px;
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+        background: #2a9d8f;
+        animation: loading-bounce 0.5s ease-in-out infinite alternate;
+      }
+      .loader:after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 7px;
+        width: 45px;
+        border-radius: 4px;
+        box-shadow: 0 5px 0 #f2f2f2, -35px 50px 0 #f2f2f2, -70px 95px 0 #f2f2f2;
+        animation: loading-step 1s ease-in-out infinite;
+      }
+      @keyframes loading-bounce {
+        0% { transform: scale(1, 0.7); }
+        40% { transform: scale(0.8, 1.2); }
+        60% { transform: scale(1, 1); }
+        100% { bottom: 140px; }
+      }
+      @keyframes loading-step {
+        0% {
+          box-shadow: 0 10px 0 rgba(0, 0, 0, 0),
+                      0 10px 0 #f2f2f2,
+                      -35px 50px 0 #f2f2f2,
+                      -70px 90px 0 #f2f2f2;
+        }
+        100% {
+          box-shadow: 0 10px 0 #f2f2f2,
+                      -35px 50px 0 #f2f2f2,
+                      -70px 90px 0 #f2f2f2,
+                      -70px 90px 0 rgba(0, 0, 0, 0);
+        }
+      }
     </style>
   </head>
   <body>
-    <div class=\"spinner\" aria-label=\"Loading\" role=\"status\">\n      <span></span>\n      <span></span>\n      <span></span>\n      <span></span>\n      <span></span>\n      <span></span>\n      <span></span>\n      <span></span>\n    </div>
+    <div class="loader"></div>
   </body>
  </html>
     """
