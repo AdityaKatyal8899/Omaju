@@ -9,7 +9,8 @@ import { AuthProvider } from "@/hooks/useAuth"
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
-  title: "Omaju OnBoarding",
+  title: "Omaju",
+  robots: { index: false, follow: false },
 }
 
 export default function RootLayout({

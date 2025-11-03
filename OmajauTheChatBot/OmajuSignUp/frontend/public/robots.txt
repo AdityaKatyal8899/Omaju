@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /
+Allow: /onboarding
+Sitemap: https://omaju-onboarding.onrender.com/sitemap.xml
