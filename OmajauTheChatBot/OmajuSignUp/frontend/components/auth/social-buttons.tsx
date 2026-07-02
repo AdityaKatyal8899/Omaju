@@ -8,7 +8,7 @@ type Props = {
   onGoogle?: () => void
   onGithub?: () => void
 }
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001';
+const BASE_URL = typeof window !== 'undefined' ? window.location.origin : '';
 export function SocialButtons({ onGoogle, onGithub }: Props) {
   const handleGoogleAuth = () => {
     if (onGoogle) {

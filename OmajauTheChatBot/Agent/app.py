@@ -82,7 +82,7 @@ app.json_encoder = JSONEncoder
 if os.getenv("RENDER") == "true":  # Render sets RENDER=true in deployed env
     AUTH_API_BASE = os.getenv("AUTH_API_BASE") or "https://omaju-onboarding.onrender.com/api/auth"
 else:
-    AUTH_API_BASE = os.getenv("AUTH_API_BASE") or "http://localhost:5001/api/auth"
+    AUTH_API_BASE = os.getenv("AUTH_API_BASE") or "http://localhost:3000/api/auth"
 
 def _validate_auth_or_401():
     """Validate Authorization Bearer token against OmajuSignUp profile endpoint.
